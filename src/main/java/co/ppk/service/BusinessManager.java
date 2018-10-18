@@ -13,13 +13,17 @@ public interface BusinessManager {
 
     BillboardDto getBillboardByCode (String code);
 
+    BillboardDto getBillboardById (String id);
+
     String setTemporalTransaction(TemporalTransactionDto transactionT);
 
     String setConfirmedInitTransactionByFacePlate(TransactionDto transaction);
 
+    String setAutorizationInitTransactionByFacePlate(TransactionDto transaction);
+
     TransactionDto getConfirmedTransactionByFacePlate (String facePlate);
 
-    TransactionDto getEndTransactionByFacePlate (String facePlate);
+    TemporalTransactionDto getEndTransactionByFacePlate (String facePlate);
 
     String createBillboard(BillboardDto billboard);
 
@@ -28,6 +32,8 @@ public interface BusinessManager {
     RateDto getRate();
 
     String putEndTransactionById(String id);
+
+    void updateTransaction(TransactionDto transaction);
 
     void updateBillboard(BillboardDto billboard);
 

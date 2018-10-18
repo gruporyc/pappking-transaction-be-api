@@ -1,5 +1,6 @@
 package co.ppk.data;
 
+import co.ppk.domain.Billboard;
 import co.ppk.domain.Transaction;
 import co.ppk.dto.TransactionDto;
 import org.apache.commons.dbutils.DbUtils;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Clock;
 import java.util.LinkedList;
 import java.util.List;
@@ -189,7 +191,7 @@ public class TransactionRepository {
         QueryRunner run = new QueryRunner(ds);
         try {
             String query = "SELECT * FROM ppk_transactions.transactions WHERE license_plate = '" + facePlate + "'" +
-                    " AND closed = 'N';";
+                    " AND closed in ('N','P');";
             Optional<Transaction> Transaction = run.query(query,
                     rs -> {
                         if (!rs.next()) {
@@ -221,7 +223,7 @@ public class TransactionRepository {
 
 
     //VERIFICAR SI UNA TRANSACCION YA ESTA COMPLETADA
-    public Optional<Transaction> getEndTransactionByFacePlate(String facePlate) {
+    public Optional<Transaction> getCompleteTransactionByFacePlate(String facePlate) {
         QueryRunner run = new QueryRunner(ds);
         try {
             String query = "SELECT * FROM ppk_transactions.transactions WHERE license_plate = '" + facePlate + "'" +
@@ -255,28 +257,31 @@ public class TransactionRepository {
         }
     }
 
-    public String putTransactionById(TransactionDto transaction) {
+    public void  updateTransaction(Transaction transaction) {
         QueryRunner run = new QueryRunner(ds);
 //        Timestamp now = Timestamp.from(Instant.now());
         try {
             Connection conn = ds.getConnection();
             conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
             try {
 
-                String update = "update ppk_transactions.transactions set" +
+                String update = "update ppk_transactions.transactions set " +
                         "id = '" +  transaction.getId() + "', " +
-                        "phone= '" + transaction.getPhone() + "', " +
-                        "license_plate= '" + transaction.getLicense_plate() + "', " +
-                        "billboards_code= '" + transaction.getBillboards_code() + "', " +
-                        "start_date= '" + transaction.getStart_date() + "', " +
-                        "start_time= '" + transaction.getStart_time() + "', " +
-                        "end_date= '" + transaction.getEnd_date() + "', " +
-                        "end_time= '" + transaction.getEnd_time() + "', " +
-                        "time= '" + transaction.getTime() + "', " +
-                        "price= '" + transaction.getPrice() + "', " +
-                        "closed = '" + transaction.getClosed() + "';";
+                        "phone = '" + transaction.getPhone() + "', " +
+                        "license_plate = '" + transaction.getLicense_plate() + "', " +
+                        "billboard_code = '" + transaction.getBillboards_code() + "', " +
+                        "start_date = '" + transaction.getStart_date() + "', " +
+                        "start_time = '" + transaction.getStart_time() + "', " +
+                        "end_date = '" + transaction.getEnd_date() + "', " +
+                        "end_time = '" + transaction.getEnd_time() + "', " +
+                        "time = '" + transaction.getTime() + "', " +
+                        "price = '" + transaction.getPrice() + "', " +
+                        "closed = '" + transaction.getClosed() + "' " +
+                        " WHERE  " +
+                        " id = '" + transaction.getId() +"' ";
 
-                run.update(conn, update, new ScalarHandler<>());
+                stmt.executeUpdate(update);
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
@@ -289,8 +294,9 @@ public class TransactionRepository {
             throw new RuntimeException(e);
         }
 
-        return transaction.getId();
     }
+
+
 
     public String putEndTransactionById(String id) {
         QueryRunner run = new QueryRunner(ds);

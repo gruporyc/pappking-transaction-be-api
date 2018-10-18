@@ -12,6 +12,7 @@ package co.ppk.web.controller;
 import java.util.HashMap;
 import java.util.Properties;
 
+import co.ppk.domain.Transaction;
 import co.ppk.dto.BillboardDto;
 import co.ppk.dto.RateDto;
 import co.ppk.dto.TemporalTransactionDto;
@@ -107,6 +108,20 @@ public class ProxyEndpointController extends BaseRestController {
 
     }
 
+    @RequestMapping(value = "/billboards/find/id/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Object> getBillboardById(@PathVariable("id") String id,
+                                                     HttpServletRequest request) {
+        ResponseEntity<Object> responseEntity;
+        try {
+            BillboardDto billboard = businessManager.getBillboardById(id);
+            responseEntity = ResponseEntity.ok(billboard);
+        } catch (HttpClientErrorException ex) {
+            responseEntity = setErrorResponse(ex, request);
+        }
+        return responseEntity;
+
+    }
+
 
     @RequestMapping(value = "/temporal-transaction/create", method = RequestMethod.POST)
     public ResponseEntity<Object> setTemporalTransaction(@RequestBody TemporalTransactionDto temporalTransaction,
@@ -138,6 +153,21 @@ public class ProxyEndpointController extends BaseRestController {
         return ResponseEntity.ok(transactionId);
     }
 
+    @RequestMapping(value = "/autorization/create", method = RequestMethod.POST)
+    public ResponseEntity<Object> setAutorizationInitTransactionByFacePlate(@RequestBody TransactionDto transaction,
+                                                                         BindingResult result) {
+        ResponseEntity<Object> responseEntity = apiValidator(result);
+        if (responseEntity != null) {
+            return responseEntity;
+        }
+
+        String transactionId = businessManager.setAutorizationInitTransactionByFacePlate(transaction);
+        if(transactionId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+        }
+        return ResponseEntity.ok(transactionId);
+    }
+
     @RequestMapping(value = "/confirmed/{face_plate}", method = RequestMethod.GET)
     public ResponseEntity<Object> getConfirmedTransactionByFacePlate(@PathVariable("face_plate") String facePlate,
                                                                 HttpServletRequest request) {
@@ -156,7 +186,7 @@ public class ProxyEndpointController extends BaseRestController {
                                                                         HttpServletRequest request) {
         ResponseEntity<Object> responseEntity;
         try {
-            TransactionDto transaction = businessManager.getEndTransactionByFacePlate(facePlate);
+            TemporalTransactionDto transaction = businessManager.getEndTransactionByFacePlate(facePlate);
             responseEntity = ResponseEntity.ok(transaction);
         } catch (HttpClientErrorException ex) {
             responseEntity = setErrorResponse(ex, request);
@@ -233,6 +263,20 @@ public class ProxyEndpointController extends BaseRestController {
         }
 
         businessManager.updateBillboard(billboard);
+        HashMap<String,Boolean> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<Object> updateTransaction(@RequestBody TransactionDto transaction,
+                                                  BindingResult result) {
+        ResponseEntity<Object> responseEntity = apiValidator(result);
+        if (responseEntity != null) {
+            return responseEntity;
+        }
+
+        businessManager.updateTransaction(transaction);
         HashMap<String,Boolean> response = new HashMap<>();
         response.put("success", true);
         return ResponseEntity.ok(response);

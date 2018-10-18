@@ -24,7 +24,7 @@ public class DataSourceSingleton {
             config.setUsername(Optional.ofNullable(System.getenv("TRANSACTION_JDBC_USERNAME"))
                     .orElse("root"));
             config.setPassword(Optional.ofNullable(System.getenv("TRANSACTION_JDBC_PASSWORD"))
-                    .orElse("root"));
+                    .orElse("123456"));
             config.addDataSourceProperty("cachePrepStmts", "true");
             config.addDataSourceProperty("prepStmtCacheSize", "250");
             config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
