@@ -9,7 +9,8 @@ public class Constants {
 	public static final String CLIENT_ID_HEADER = "x-client-id";
 
 
-	public static final String TRANSACTION_ALREADY_EXISTS = "already exists";
+	public static final String INIT_TRANSACTION_ALREADY_EXISTS = "La transaccion de inicio ya existe";
+	public static final String END_TRANSACTION_ALREADY_EXISTS = "La transaccion de fin ya existe";
 
 	private Constants() {
 	}

@@ -173,6 +173,40 @@ public class TemporalTransactionRepository {
         }
     }
 
+    public Optional<TemporalTransaction> getEndTransactionByFacePlate(String facePlate) {
+        QueryRunner run = new QueryRunner(ds);
+        try {
+            String query = "SELECT * FROM ppk_transactions.temporal_transactions WHERE license_plate = '" + facePlate +  "' AND " +
+                    "action = 'F';";
+            Optional<TemporalTransaction> temporalTransaction = run.query(query,
+                    rs -> {
+                        if (!rs.next()) {
+                            Optional<Object> empty = Optional.empty();
+                            return Optional.empty();
+                        }
+                        rs.last();
+
+                        return Optional.ofNullable(new TemporalTransaction.Builder()
+                                .setId(rs.getString(1))
+                                .setPhone(rs.getString(2))
+                                .setLicense_plate(rs.getString(3))
+                                .setBillboards_code(rs.getString(4))
+                                .setDate(rs.getString(5))
+                                .setHour(rs.getString(6))
+                                .setTime(rs.getString(7))
+                                .setPrice(rs.getString(8))
+                                .setAction(rs.getString(9))
+                                .setCreateDate(rs.getString(10))
+                                .setUpdateDate(rs.getString(11))
+                                .build());
+                    });
+
+            return temporalTransaction;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public void deleteTemporalTransaction(String temporalTransactionId) {
         try {
