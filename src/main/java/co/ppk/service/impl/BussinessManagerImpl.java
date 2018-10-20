@@ -13,6 +13,7 @@ import co.ppk.dto.TemporalTransactionDto;
 import co.ppk.dto.TransactionDto;
 import co.ppk.service.BusinessManager;
 import co.ppk.data.TransactionRepository;
+import co.ppk.utilities.PersonalExcepcion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -108,11 +109,13 @@ public class BussinessManagerImpl implements BusinessManager{
     }
 
     @Override
-    public String setTemporalTransaction(TemporalTransactionDto temporalTransaction) {
+    public String setTemporalTransaction(TemporalTransactionDto temporalTransaction) throws PersonalExcepcion {
         if(temporalTransactionRepository.getInitTransactionByFacePlate(temporalTransaction.getLicense_plate()).isPresent()) {
+           // throw new PersonalExcepcion(INIT_TRANSACTION_ALREADY_EXISTS);
             return INIT_TRANSACTION_ALREADY_EXISTS;
         }
         if(temporalTransactionRepository.getEndTransactionByFacePlate(temporalTransaction.getLicense_plate()).isPresent()) {
+            //throw new PersonalExcepcion(END_TRANSACTION_ALREADY_EXISTS);
             return END_TRANSACTION_ALREADY_EXISTS;
         }
         temporalTransactionRepository.setTemporalTransaction(temporalTransaction);
@@ -129,10 +132,11 @@ public class BussinessManagerImpl implements BusinessManager{
 
     @Override
     public String setAutorizationInitTransactionByFacePlate(TransactionDto transaction) {
-        if(transactionRepository.getTransactionByFacePlate(transaction.getLicense_plate()).isPresent()) {
+        if(transactionRepository.getConfirmedTransactionByFacePlate(transaction.getLicense_plate()).isPresent()) {
             return "Ya la transaccion de inicio EXISTE";
         }
-        return transactionRepository.setConfirmedInitTransactionByFacePlate(transaction);
+        transactionRepository.setConfirmedInitTransactionByFacePlate(transaction);
+        return "S";
     }
 
     @Override

@@ -4,6 +4,7 @@ import co.ppk.dto.BillboardDto;
 import co.ppk.dto.RateDto;
 import co.ppk.dto.TemporalTransactionDto;
 import co.ppk.dto.TransactionDto;
+import co.ppk.utilities.PersonalExcepcion;
 
 public interface BusinessManager {
 
@@ -15,7 +16,7 @@ public interface BusinessManager {
 
     BillboardDto getBillboardById (String id);
 
-    String setTemporalTransaction(TemporalTransactionDto transactionT);
+    String setTemporalTransaction(TemporalTransactionDto transactionT) throws PersonalExcepcion;
 
     String setConfirmedInitTransactionByFacePlate(TransactionDto transaction);
 
