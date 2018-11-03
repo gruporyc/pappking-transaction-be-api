@@ -12,12 +12,12 @@ package co.ppk.web.controller;
 import java.util.HashMap;
 import java.util.Properties;
 
-import co.ppk.domain.Transaction;
 import co.ppk.dto.BillboardDto;
 import co.ppk.dto.RateDto;
 import co.ppk.dto.TemporalTransactionDto;
 import co.ppk.dto.TransactionDto;
 import co.ppk.service.BusinessManager;
+import co.ppk.utilities.PersonalExcepcion;
 import co.ppk.validators.TransactionValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,7 +125,7 @@ public class ProxyEndpointController extends BaseRestController {
 
     @RequestMapping(value = "/temporal-transaction/create", method = RequestMethod.POST)
     public ResponseEntity<Object> setTemporalTransaction(@RequestBody TemporalTransactionDto temporalTransaction,
-                                                 BindingResult result) {
+                                                 BindingResult result) throws PersonalExcepcion {
         ResponseEntity<Object> responseEntity = apiValidator(result);
         if (responseEntity != null) {
             return responseEntity;
